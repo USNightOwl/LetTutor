@@ -1,5 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:let_tutor/blocs/auth/auth_providers.dart';
 import 'package:let_tutor/configs/app_localizations.dart';
 import 'package:let_tutor/presentation/screen/authentication/sign_in_screen.dart';
 import 'package:let_tutor/routes.dart';
@@ -44,7 +46,10 @@ class MyApp extends StatelessWidget {
       ),
       darkTheme: ThemeData.dark(),
       onGenerateRoute: Routes.generateRoute,
-      home: const SignInScreen(),
+      home: MultiBlocProvider(
+        providers: buildAuthBlocs(context),
+        child: const SignInScreen(),
+      ),
     );
   }
 }

@@ -1,5 +1,9 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:let_tutor/blocs/auth/sign_in/sign_in_event.dart';
+import 'package:let_tutor/blocs/auth/sign_in/sign_in_state.dart';
+import 'package:let_tutor/blocs/auth/sign_in/sing_in_bloc.dart';
 import 'package:let_tutor/presentation/screen/authentication/widgets/app_logo.dart';
 import 'package:let_tutor/presentation/screen/authentication/widgets/custom_label.dart';
 import 'package:let_tutor/presentation/screen/authentication/widgets/custom_text_field.dart';
@@ -23,49 +27,58 @@ class _SignInScreenState extends State<SignInScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            const AppLogo(),
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  CustomLabel(text: 'email'.tr()),
-                  CustomTextField(
-                    hintText: 'mail@example.com',
-                    controller: _emailController,
-                    onChanged: (value) {
-                      // TODO: Bloc
-                    },
-                    errorText: emailErrorText,
-                    icon: Icons.mail,
+      body: BlocConsumer<SignInBloc, SignInState>(
+        listener: (context, state) {
+          handleState(context, state);
+        },
+        builder: (context, state) {
+          return SingleChildScrollView(
+            child: Column(
+              children: [
+                const AppLogo(),
+                Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CustomLabel(text: 'email'.tr()),
+                      CustomTextField(
+                        hintText: 'mail@example.com',
+                        controller: _emailController,
+                        onChanged: (value) {
+                          context
+                              .read<SignInBloc>()
+                              .add(EmailChanged(email: value));
+                        },
+                        errorText: emailErrorText,
+                        icon: Icons.mail,
+                      ),
+                      const SizedBox(height: 10),
+                      CustomLabel(text: 'password'.tr()),
+                      CustomTextField(
+                        hintText: 'password'.tr(),
+                        controller: _passwordController,
+                        obscureText: _obscureText,
+                        onPressedHidePass: _togglePasswordVisibility,
+                        onChanged: (value) {
+                          // TODO: Bloc
+                        },
+                        showIcon: true,
+                        errorText: passwordErrorText,
+                        icon: Icons.lock,
+                      ),
+                      _navigateToForgotPass(context),
+                      _loginButton(context),
+                      _labelLoginWithSocial(),
+                      const SocialLogin(),
+                      _navigateToSignUp(context),
+                    ],
                   ),
-                  const SizedBox(height: 10),
-                  CustomLabel(text: 'password'.tr()),
-                  CustomTextField(
-                    hintText: 'password'.tr(),
-                    controller: _passwordController,
-                    obscureText: _obscureText,
-                    onPressedHidePass: _togglePasswordVisibility,
-                    onChanged: (value) {
-                      // TODO: Bloc
-                    },
-                    showIcon: true,
-                    errorText: passwordErrorText,
-                    icon: Icons.lock,
-                  ),
-                  _navigateToForgotPass(context),
-                  _loginButton(context),
-                  _labelLoginWithSocial(),
-                  const SocialLogin(),
-                  _navigateToSignUp(context),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
@@ -135,5 +148,13 @@ class _SignInScreenState extends State<SignInScreen> {
     setState(() {
       _obscureText = !_obscureText;
     });
+  }
+
+  void handleState(BuildContext context, SignInState state) {
+    if (state is EmailInvalid) {
+      emailErrorText = state.error;
+    } else if (state is EmailValid) {
+      emailErrorText = null;
+    }
   }
 }
