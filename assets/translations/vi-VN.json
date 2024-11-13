@@ -140,13 +140,13 @@
     "page": "Trang",
     "tutor_review": "Đánh giá gia sư",
     "password": "Mật khẩu",
+    "retype_password": "Nhập lại mật khẩu",
     "password_example": "mật_khẩu",
     "forgot_password": "Quên mật khẩu?",
     "or_continue_with": "Hoặc tiếp tục với",
     "not_a_member_yet": "Chưa là thành viên?",
+    "already_have_an_account": "Bạn đã có tài khoản?",
     "sign_up": "Đăng ký",
     "login": "Đăng nhập",
     "signing_in": "Đang đăng nhập..."
-
-
 }

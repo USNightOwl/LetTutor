@@ -1,9 +1,9 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:let_tutor/blocs/auth/sign_in/sign_in_event.dart';
-import 'package:let_tutor/blocs/auth/sign_in/sign_in_state.dart';
-import 'package:let_tutor/blocs/auth/sign_in/sing_in_bloc.dart';
+import 'package:let_tutor/blocs/auth/sign_up/sign_up_bloc.dart';
+import 'package:let_tutor/blocs/auth/sign_up/sign_up_event.dart';
+import 'package:let_tutor/blocs/auth/sign_up/sign_up_state.dart';
 import 'package:let_tutor/presentation/screen/authentication/widgets/app_logo.dart';
 import 'package:let_tutor/presentation/screen/authentication/widgets/custom_label.dart';
 import 'package:let_tutor/presentation/screen/authentication/widgets/custom_text_field.dart';
@@ -11,28 +11,31 @@ import 'package:let_tutor/presentation/screen/authentication/widgets/social_logi
 import 'package:let_tutor/presentation/styles/custom_button.dart';
 import 'package:let_tutor/routes.dart';
 
-class SignInScreen extends StatefulWidget {
-  const SignInScreen({super.key});
+class SignUpScreen extends StatefulWidget {
+  const SignUpScreen({super.key});
 
   @override
-  State<SignInScreen> createState() => _SignInScreenState();
+  State<SignUpScreen> createState() => _SignUpScreenState();
 }
 
-class _SignInScreenState extends State<SignInScreen> {
+class _SignUpScreenState extends State<SignUpScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _retypePasswordController = TextEditingController();
   String? emailErrorText;
   String? passwordErrorText;
+  String? retypePasswordErrorText;
   bool _obscureText = true;
+  bool _obscureText2 = true;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => SignInBloc(
+      create: (context) => SignUpBloc(
           // authenticationRepository: context.read<AuthenticationRepository>(),
           ),
       child: Scaffold(
-        body: BlocConsumer<SignInBloc, SignInState>(
+        body: BlocConsumer<SignUpBloc, SignUpState>(
           listener: (context, state) {
             handleState(context, state);
           },
@@ -52,7 +55,7 @@ class _SignInScreenState extends State<SignInScreen> {
                           controller: _emailController,
                           onChanged: (value) {
                             context
-                                .read<SignInBloc>()
+                                .read<SignUpBloc>()
                                 .add(EmailChanged(email: value));
                           },
                           errorText: emailErrorText,
@@ -67,21 +70,36 @@ class _SignInScreenState extends State<SignInScreen> {
                           onPressedHidePass: _togglePasswordVisibility,
                           onChanged: (value) {
                             context
-                                .read<SignInBloc>()
+                                .read<SignUpBloc>()
                                 .add(PasswordChanged(password: value));
                           },
                           showIcon: true,
                           errorText: passwordErrorText,
                           icon: Icons.lock,
                         ),
-                        _navigateToForgotPass(context),
-                        _loginButton(context),
+                        const SizedBox(height: 10),
+                        CustomLabel(text: 'retype_password'.tr()),
+                        CustomTextField(
+                          hintText: 'retype_password'.tr(),
+                          controller: _retypePasswordController,
+                          obscureText: _obscureText2,
+                          onPressedHidePass: _togglePasswordVisibility2,
+                          onChanged: (value) {
+                            context.read<SignUpBloc>().add(
+                                RetypePasswordChanged(retypePassword: value));
+                          },
+                          showIcon: true,
+                          errorText: retypePasswordErrorText,
+                          icon: Icons.lock,
+                        ),
+                        const SizedBox(height: 20),
+                        _signUpButton(context),
                         _labelLoginWithSocial(),
                         const SocialLogin(),
-                        _navigateToSignUp(context),
+                        _navigateToSignIn(context),
                       ],
                     ),
-                  ),
+                  )
                 ],
               ),
             );
@@ -91,20 +109,43 @@ class _SignInScreenState extends State<SignInScreen> {
     );
   }
 
-  Row _navigateToSignUp(BuildContext context) {
+  void handleState(BuildContext context, SignUpState state) {
+    switch (state.runtimeType) {
+      case const (EmailInvalid):
+        emailErrorText = (state as EmailInvalid).error;
+        break;
+      case const (EmailValid):
+        emailErrorText = null;
+        break;
+      case const (PasswordInvalid):
+        passwordErrorText = (state as PasswordInvalid).error;
+        break;
+      case const (PasswordValid):
+        passwordErrorText = null;
+        break;
+      case const (RetypePasswordInvalid):
+        retypePasswordErrorText = (state as RetypePasswordInvalid).error;
+        break;
+      case const (RetypePasswordValid):
+        retypePasswordErrorText = null;
+        break;
+    }
+  }
+
+  Row _navigateToSignIn(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          'not_a_member_yet'.tr(),
+          'already_have_an_account'.tr(),
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
         ),
         TextButton(
           onPressed: () {
-            Routes.navigateToReplacement(context, Routes.signUpScreen);
+            Routes.navigateToReplacement(context, Routes.signInScreen);
           },
           child: Text(
-            'sign_up'.tr(),
+            'login'.tr(),
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.normal,
@@ -112,6 +153,23 @@ class _SignInScreenState extends State<SignInScreen> {
           ),
         ),
       ],
+    );
+  }
+
+  MyElevatedButton _signUpButton(BuildContext context) {
+    return MyElevatedButton(
+      text: 'sign_up'.tr(),
+      height: 52,
+      radius: 8,
+      onPressed: () {
+        context.read<SignUpBloc>().add(
+              SignUpSubmitted(
+                email: _emailController.text,
+                password: _passwordController.text,
+                retypePassword: _retypePasswordController.text,
+              ),
+            );
+      },
     );
   }
 
@@ -129,62 +187,15 @@ class _SignInScreenState extends State<SignInScreen> {
     );
   }
 
-  MyElevatedButton _loginButton(BuildContext context) {
-    return MyElevatedButton(
-      text: 'login'.tr(),
-      height: 52,
-      radius: 8,
-      onPressed: () {
-        context.read<SignInBloc>().add(
-              SignInSubmitted(
-                email: _emailController.text,
-                password: _passwordController.text,
-              ),
-            );
-      },
-    );
-  }
-
-  TextButton _navigateToForgotPass(BuildContext context) {
-    return TextButton(
-      onPressed: () {},
-      style: TextButton.styleFrom(
-        padding: const EdgeInsets.only(top: 20, bottom: 15),
-      ),
-      child: Text(
-        'forgot_password'.tr(),
-        style: const TextStyle(
-          fontWeight: FontWeight.normal,
-          fontSize: 18,
-        ),
-      ),
-    );
-  }
-
   void _togglePasswordVisibility() {
     setState(() {
       _obscureText = !_obscureText;
     });
   }
 
-  void handleState(BuildContext context, SignInState state) {
-    if (state is EmailInvalid) {
-      emailErrorText = state.error;
-    } else if (state is EmailValid) {
-      emailErrorText = null;
-    } else if (state is PasswordInvalid) {
-      passwordErrorText = state.error;
-    } else if (state is PasswordValid) {
-      passwordErrorText = null;
-    } else if (state is SignInLoading) {
-      // ẩn SnackBar hiện tại (nếu có) đang được hiển thị trên màn hình
-      ScaffoldMessenger.of(context).hideCurrentSnackBar();
-      // hiển thị một SnackBar mới với nội dung được chỉ định.
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('signing_in'.tr()),
-        ),
-      );
-    }
+  void _togglePasswordVisibility2() {
+    setState(() {
+      _obscureText2 = !_obscureText2;
+    });
   }
 }
