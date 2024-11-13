@@ -61,7 +61,9 @@ class _SignInScreenState extends State<SignInScreen> {
                         obscureText: _obscureText,
                         onPressedHidePass: _togglePasswordVisibility,
                         onChanged: (value) {
-                          // TODO: Bloc
+                          context
+                              .read<SignInBloc>()
+                              .add(PasswordChanged(password: value));
                         },
                         showIcon: true,
                         errorText: passwordErrorText,
@@ -124,7 +126,14 @@ class _SignInScreenState extends State<SignInScreen> {
       text: 'login'.tr(),
       height: 52,
       radius: 8,
-      onPressed: () {},
+      onPressed: () {
+        context.read<SignInBloc>().add(
+              SignInSubmitted(
+                email: _emailController.text,
+                password: _passwordController.text,
+              ),
+            );
+      },
     );
   }
 
@@ -155,6 +164,19 @@ class _SignInScreenState extends State<SignInScreen> {
       emailErrorText = state.error;
     } else if (state is EmailValid) {
       emailErrorText = null;
+    } else if (state is PasswordInvalid) {
+      passwordErrorText = state.error;
+    } else if (state is PasswordValid) {
+      passwordErrorText = null;
+    } else if (state is SignInLoading) {
+      // ẩn SnackBar hiện tại (nếu có) đang được hiển thị trên màn hình
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      // hiển thị một SnackBar mới với nội dung được chỉ định.
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('signing_in'.tr()),
+        ),
+      );
     }
   }
 }
