@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:let_tutor/presentation/screen/authentication/widgets/app_logo.dart';
 import 'package:let_tutor/presentation/screen/authentication/widgets/custom_label.dart';
@@ -31,7 +32,7 @@ class _SignInScreenState extends State<SignInScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const CustomLabel(text: 'Email'),
+                  CustomLabel(text: 'email'.tr()),
                   CustomTextField(
                     hintText: 'mail@example.com',
                     controller: _emailController,
@@ -42,9 +43,9 @@ class _SignInScreenState extends State<SignInScreen> {
                     icon: Icons.mail,
                   ),
                   const SizedBox(height: 10),
-                  const CustomLabel(text: 'Password'),
+                  CustomLabel(text: 'password'.tr()),
                   CustomTextField(
-                    hintText: 'Password',
+                    hintText: 'password'.tr(),
                     controller: _passwordController,
                     obscureText: _obscureText,
                     onPressedHidePass: _togglePasswordVisibility,
@@ -73,15 +74,15 @@ class _SignInScreenState extends State<SignInScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Text(
-          'Not a member yet?',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
+        Text(
+          'not_a_member_yet'.tr(),
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
         ),
         TextButton(
           onPressed: () {},
-          child: const Text(
-            'Sign up',
-            style: TextStyle(
+          child: Text(
+            'sign_up'.tr(),
+            style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.normal,
             ),
@@ -95,10 +96,10 @@ class _SignInScreenState extends State<SignInScreen> {
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.only(top: 30, bottom: 10),
-      child: const Text(
-        'Or continue with',
+      child: Text(
+        'or_continue_with'.tr(),
         textAlign: TextAlign.center,
-        style: TextStyle(
+        style: const TextStyle(
           fontSize: 18,
         ),
       ),
@@ -107,7 +108,7 @@ class _SignInScreenState extends State<SignInScreen> {
 
   MyElevatedButton _loginButton(BuildContext context) {
     return MyElevatedButton(
-      text: 'Login',
+      text: 'login'.tr(),
       height: 52,
       radius: 8,
       onPressed: () {},
@@ -120,9 +121,9 @@ class _SignInScreenState extends State<SignInScreen> {
       style: TextButton.styleFrom(
         padding: const EdgeInsets.only(top: 20, bottom: 15),
       ),
-      child: const Text(
-        'Forgot Password?',
-        style: TextStyle(
+      child: Text(
+        'forgot_password'.tr(),
+        style: const TextStyle(
           fontWeight: FontWeight.normal,
           fontSize: 18,
         ),
