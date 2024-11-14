@@ -12,11 +12,35 @@ class AuthenticationRepository {
       : _authenticationApiClient =
             authenticationApiClient ?? AuthenticationApiClient();
 
+  Future<AuthenticationResponse> signIn(String email, String password) async {
+    log('from repo : $email, password: $password');
+    try {
+      final response = await _authenticationApiClient.signIn(email, password);
+      return response;
+    } on DioException catch (e) {
+      throw DioExceptionHandler.fromDioError(e);
+    } catch (e) {
+      log('error handling from repo: $e');
+      rethrow;
+    }
+  }
+
   Future<AuthenticationResponse> signUp(String email, String password) async {
     log('from repo : $email, password: $password');
     try {
       final response = await _authenticationApiClient.signUp(email, password);
       return response;
+    } on DioException catch (e) {
+      throw DioExceptionHandler.fromDioError(e);
+    } catch (e) {
+      log('error handling from repo: $e');
+      rethrow;
+    }
+  }
+
+  Future<AuthenticationResponse> signInWithGoogle(String accessToken) async {
+    try {
+      return await _authenticationApiClient.signInWithGoogle(accessToken);
     } on DioException catch (e) {
       throw DioExceptionHandler.fromDioError(e);
     } catch (e) {

@@ -186,6 +186,17 @@ class _SignInScreenState extends State<SignInScreen> {
           content: Text('signing_in'.tr()),
         ),
       );
+    } else if (state is SignInSuccess) {
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      Routes.navigateToReplacement(context, Routes.home);
+    } else if (state is SignInFailure) {
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(state.error),
+        ),
+      );
+      Routes.navigateToReplacement(context, Routes.home);
     }
   }
 }

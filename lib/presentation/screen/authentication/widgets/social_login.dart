@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:let_tutor/blocs/auth/sign_in/sign_in_event.dart';
+import 'package:let_tutor/blocs/auth/sign_in/sing_in_bloc.dart';
 import 'package:let_tutor/presentation/assets/assets_manager.dart';
 
 class SocialLogin extends StatelessWidget {
@@ -19,7 +22,9 @@ class SocialLogin extends StatelessWidget {
           ),
         ),
         IconButton(
-          onPressed: () {},
+          onPressed: () {
+            context.read<SignInBloc>().add(SignInWithGoogle());
+          },
           icon: SvgPicture.asset(
             AssetsManager.googleLogo,
             width: 50,

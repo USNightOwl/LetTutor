@@ -149,7 +149,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             content: Text('Sign up success!'),
           ),
         );
-        Routes.navigateToReplacement(context, Routes.signInScreen);
+        Routes.navigateToReplacement(context, Routes.home);
         break;
       case const (SignUpFailure):
         scaffoldMessenger.hideCurrentSnackBar();

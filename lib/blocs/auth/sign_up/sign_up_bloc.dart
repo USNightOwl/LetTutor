@@ -1,17 +1,29 @@
+import 'dart:developer';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:let_tutor/blocs/auth/sign_up/sign_up_event.dart';
 import 'package:let_tutor/blocs/auth/sign_up/sign_up_state.dart';
+import 'package:let_tutor/data/models/user/authentication_response.dart';
 import 'package:let_tutor/data/repositories/authentication_repository.dart';
+import 'package:let_tutor/data/sharedpref/shared_preference_helper.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
   final AuthenticationRepository authenticationRepository;
+  late SharedPreferenceHelper sharedPrefsHelper;
 
   SignUpBloc({required this.authenticationRepository})
       : super(SignUpInitial()) {
+    _getPres();
     on<SignUpSubmitted>(_onSignUpSubmitted);
     on<EmailChanged>(_onEmailChanged);
     on<PasswordChanged>(_onPasswordChanged);
     on<RetypePasswordChanged>(_onRetypePasswordChanged);
+  }
+
+  void _getPres() async {
+    sharedPrefsHelper =
+        SharedPreferenceHelper(await SharedPreferences.getInstance());
   }
 
   void _onSignUpSubmitted(
@@ -29,7 +41,17 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
     } else {
       emit(SignUpLoading());
       try {
-        await authenticationRepository.signUp(event.email, event.password);
+        AuthenticationResponse registerResponse =
+            await authenticationRepository.signUp(event.email, event.password);
+
+        String accessToken = registerResponse.tokens.access.token;
+        String refreshToken = registerResponse.tokens.refresh.token;
+
+        log('accessToken: $accessToken');
+        log('refreshToken: $refreshToken');
+
+        // Save the tokens for later use
+        await saveTokens(accessToken, refreshToken);
         emit(SignUpSuccess());
       } catch (e) {
         emit(SignUpFailure(e.toString()));
@@ -62,6 +84,11 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
     } else {
       emit(EmailValid());
     }
+  }
+
+  Future<void> saveTokens(String accessToken, String refreshToken) async {
+    sharedPrefsHelper.saveAcessToken(accessToken);
+    sharedPrefsHelper.saveRefreshToken(refreshToken);
   }
 }
 

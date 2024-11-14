@@ -1,13 +1,16 @@
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
+import 'package:let_tutor/data/network/interceptors/dio_interceptor.dart';
 
 class DioClient {
   static const baseUrl = 'https://sandbox.api.lettutor.com';
 
   // create singleton instance
   static final instance = DioClient._();
-  DioClient._();
+  DioClient._() {
+    _dio.interceptors.add(DioInterceptor(_dio));
+  }
 
   final Dio _dio = Dio(BaseOptions(
     baseUrl: baseUrl,
