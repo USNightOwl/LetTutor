@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:let_tutor/blocs/auth/sign_in/sign_in_event.dart';
 import 'package:let_tutor/blocs/auth/sign_in/sign_in_state.dart';
 import 'package:let_tutor/blocs/auth/sign_in/sing_in_bloc.dart';
+import 'package:let_tutor/data/repositories/authentication_repository.dart';
 import 'package:let_tutor/presentation/screen/authentication/widgets/app_logo.dart';
 import 'package:let_tutor/presentation/screen/authentication/widgets/custom_label.dart';
 import 'package:let_tutor/presentation/screen/authentication/widgets/custom_text_field.dart';
@@ -29,8 +30,8 @@ class _SignInScreenState extends State<SignInScreen> {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => SignInBloc(
-          // authenticationRepository: context.read<AuthenticationRepository>(),
-          ),
+        authenticationRepository: context.read<AuthenticationRepository>(),
+      ),
       child: Scaffold(
         body: BlocConsumer<SignInBloc, SignInState>(
           listener: (context, state) {

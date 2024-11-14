@@ -1,9 +1,13 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:let_tutor/blocs/auth/sign_up/sign_up_event.dart';
 import 'package:let_tutor/blocs/auth/sign_up/sign_up_state.dart';
+import 'package:let_tutor/data/repositories/authentication_repository.dart';
 
 class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
-  SignUpBloc() : super(SignUpInitial()) {
+  final AuthenticationRepository authenticationRepository;
+
+  SignUpBloc({required this.authenticationRepository})
+      : super(SignUpInitial()) {
     on<SignUpSubmitted>(_onSignUpSubmitted);
     on<EmailChanged>(_onEmailChanged);
     on<PasswordChanged>(_onPasswordChanged);
@@ -25,7 +29,7 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
     } else {
       emit(SignUpLoading());
       try {
-        //await authenticationRepository.signUp(event.email, event.password);
+        await authenticationRepository.signUp(event.email, event.password);
         emit(SignUpSuccess());
       } catch (e) {
         emit(SignUpFailure(e.toString()));

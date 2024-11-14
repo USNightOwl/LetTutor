@@ -3,9 +3,13 @@ import 'dart:developer';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:let_tutor/blocs/auth/sign_in/sign_in_event.dart';
 import 'package:let_tutor/blocs/auth/sign_in/sign_in_state.dart';
+import 'package:let_tutor/data/repositories/authentication_repository.dart';
 
 class SignInBloc extends Bloc<SignInEvent, SignInState> {
-  SignInBloc() : super(SignInInitial()) {
+  final AuthenticationRepository authenticationRepository;
+
+  SignInBloc({required this.authenticationRepository})
+      : super(SignInInitial()) {
     on<EmailChanged>(_onEmailChanged);
     on<PasswordChanged>(_onPasswordChanged);
     on<SignInSubmitted>(_onSignInSubmitted);

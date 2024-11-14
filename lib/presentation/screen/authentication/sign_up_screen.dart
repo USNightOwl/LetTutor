@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:let_tutor/blocs/auth/sign_up/sign_up_bloc.dart';
 import 'package:let_tutor/blocs/auth/sign_up/sign_up_event.dart';
 import 'package:let_tutor/blocs/auth/sign_up/sign_up_state.dart';
+import 'package:let_tutor/data/repositories/authentication_repository.dart';
 import 'package:let_tutor/presentation/screen/authentication/widgets/app_logo.dart';
 import 'package:let_tutor/presentation/screen/authentication/widgets/custom_label.dart';
 import 'package:let_tutor/presentation/screen/authentication/widgets/custom_text_field.dart';
@@ -32,8 +33,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => SignUpBloc(
-          // authenticationRepository: context.read<AuthenticationRepository>(),
-          ),
+        authenticationRepository: context.read<AuthenticationRepository>(),
+      ),
       child: Scaffold(
         body: BlocConsumer<SignUpBloc, SignUpState>(
           listener: (context, state) {
@@ -110,6 +111,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   void handleState(BuildContext context, SignUpState state) {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+
     switch (state.runtimeType) {
       case const (EmailInvalid):
         emailErrorText = (state as EmailInvalid).error;
@@ -128,6 +131,33 @@ class _SignUpScreenState extends State<SignUpScreen> {
         break;
       case const (RetypePasswordValid):
         retypePasswordErrorText = null;
+        break;
+      case const (PasswordsDoNotMatch):
+        retypePasswordErrorText = (state as PasswordsDoNotMatch).error;
+        break;
+      case const (SignUpLoading):
+        scaffoldMessenger.showSnackBar(
+          const SnackBar(
+            content: Text('Signing up...'),
+          ),
+        );
+        break;
+      case const (SignUpSuccess):
+        scaffoldMessenger.hideCurrentSnackBar();
+        scaffoldMessenger.showSnackBar(
+          const SnackBar(
+            content: Text('Sign up success!'),
+          ),
+        );
+        Routes.navigateToReplacement(context, Routes.signInScreen);
+        break;
+      case const (SignUpFailure):
+        scaffoldMessenger.hideCurrentSnackBar();
+        scaffoldMessenger.showSnackBar(
+          SnackBar(
+            content: Text((state as SignUpFailure).error),
+          ),
+        );
         break;
     }
   }
