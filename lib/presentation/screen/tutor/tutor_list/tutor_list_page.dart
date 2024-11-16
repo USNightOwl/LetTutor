@@ -2,10 +2,14 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:let_tutor/blocs/tutor/tutor_list/tutor_list_bloc.dart';
+import 'package:let_tutor/blocs/tutor/tutor_list/tutor_list_event.dart';
 import 'package:let_tutor/blocs/tutor/tutor_list/tutor_list_state.dart';
+import 'package:let_tutor/data/models/tutors/learn_topic.dart';
+import 'package:let_tutor/data/models/tutors/test_preparation.dart';
 import 'package:let_tutor/data/models/tutors/tutor.dart';
 import 'package:let_tutor/presentation/screen/tutor/tutor_list/widgets/tutor_information_card.dart';
 import 'package:let_tutor/presentation/styles/custom_text_style.dart';
+import 'package:number_paginator/number_paginator.dart';
 
 class TutorListPage extends StatefulWidget {
   const TutorListPage({super.key});
@@ -55,8 +59,8 @@ class _TutorListPageState extends State<TutorListPage> {
                           }
                           return _listTutorInformationCard(
                               state.tutors,
-                              // state.learnTopics,
-                              // state.testPreparations,
+                              state.learnTopics,
+                              state.testPreparations,
                               state.totalPage,
                               state.page);
                         } else if (state is TutorListFailure) {
@@ -79,8 +83,8 @@ class _TutorListPageState extends State<TutorListPage> {
 
   _listTutorInformationCard(
       List<Tutor> tutors,
-      // List<LearnTopic> listLearnTopics,
-      // List<TestPreparation> listTestPreparations,
+      List<LearnTopic> listLearnTopics,
+      List<TestPreparation> listTestPreparations,
       int totalPage,
       int page) {
     // Sort tutors by favorite status, favorite tutor status and rating
@@ -107,12 +111,22 @@ class _TutorListPageState extends State<TutorListPage> {
               children: [
                 TutorInformationCard(
                   tutor: tutors[index],
+                  listLearnTopics: listLearnTopics,
+                  listTestPreparations: listTestPreparations,
                 ),
                 const SizedBox(height: 16),
               ],
             );
           }
-          return Container();
+          return NumberPaginator(
+            numberPages: totalPage,
+            initialPage: page - 1,
+            onPageChange: (index) {
+              context
+                  .read<TutorListBloc>()
+                  .add(TutorListRequested(page: index + 1));
+            },
+          );
         },
       ),
     );

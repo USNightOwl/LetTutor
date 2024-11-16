@@ -1,4 +1,6 @@
 import 'package:equatable/equatable.dart';
+import 'package:let_tutor/data/models/tutors/learn_topic.dart';
+import 'package:let_tutor/data/models/tutors/test_preparation.dart';
 import 'package:let_tutor/data/models/tutors/tutor.dart';
 
 abstract class TutorListState extends Equatable {
@@ -18,8 +20,8 @@ class TutorListLoading extends TutorListState {
 class TutorListSuccess extends TutorListState {
   final List<Tutor> tutors;
   final Map<String, dynamic> filters;
-  // final List<LearnTopic> learnTopics;
-  // final List<TestPreparation> testPreparations;
+  final List<LearnTopic> learnTopics;
+  final List<TestPreparation> testPreparations;
   final bool isReset;
   final String selectedNationality;
   // final BookedSchedule upcomingSchedule;
@@ -30,8 +32,8 @@ class TutorListSuccess extends TutorListState {
   const TutorListSuccess(
     this.tutors,
     this.filters,
-    // this.learnTopics,
-    // this.testPreparations,
+    this.learnTopics,
+    this.testPreparations,
     this.isReset,
     this.selectedNationality,
     // this.upcomingSchedule,
@@ -42,10 +44,10 @@ class TutorListSuccess extends TutorListState {
 
   @override
   List<Object?> get props => [
-        // tutors,
+        tutors,
         filters,
-        // learnTopics,
-        // testPreparations,
+        learnTopics,
+        testPreparations,
         isReset,
         selectedNationality,
         // upcomingSchedule,

@@ -4,6 +4,8 @@ import 'dart:developer';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:let_tutor/blocs/tutor/tutor_list/tutor_list_event.dart';
 import 'package:let_tutor/blocs/tutor/tutor_list/tutor_list_state.dart';
+import 'package:let_tutor/data/models/tutors/learn_topic.dart';
+import 'package:let_tutor/data/models/tutors/test_preparation.dart';
 import 'package:let_tutor/data/repositories/tutor_repository.dart';
 
 class TutorListBloc extends Bloc<TutorListEvent, TutorListState> {
@@ -38,9 +40,9 @@ class TutorListBloc extends Bloc<TutorListEvent, TutorListState> {
 
       int totalPage = (filteredTutors.count / tutorPerPage).ceil();
 
-      // List<LearnTopic> learnTopics = await tutorRepository.getLearnTopic();
-      // List<TestPreparation> testPreparations =
-      //     await tutorRepository.getTestPreparation();
+      List<LearnTopic> learnTopics = await tutorRepository.getLearnTopic();
+      List<TestPreparation> testPreparations =
+          await tutorRepository.getTestPreparation();
 
       // List<BookedSchedule> bookedSchedules =
       //     await scheduleRepository.getBookedSchedule();
@@ -53,8 +55,8 @@ class TutorListBloc extends Bloc<TutorListEvent, TutorListState> {
       emit(TutorListSuccess(
           filteredTutors.rows,
           filters,
-          // learnTopics,
-          // testPreparations,
+          learnTopics,
+          testPreparations,
           isReset,
           selectedNationality,
           // upcomingSchedule,
